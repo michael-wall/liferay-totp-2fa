@@ -69,14 +69,22 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 			}
 			
 			return Authenticator.FAILURE;
-		} else if (isAdministrator(user)) {
-			if (_log.isInfoEnabled()) {
-				_log.info("TOTP_2FAPostAuthenticator, return success as user is Administrator (skipping TOTP 2FA check) for: " + identifier);	
-			}			
+		}	
+		
+		boolean[] isAdministratorOrSkipUserRole = isAdministratorOrSkipUserRole(user);
 			
+		if (isAdministratorOrSkipUserRole[0]) {
+			if (_log.isInfoEnabled()) {
+				if (isAdministratorOrSkipUserRole[1]) {
+					_log.info("TOTP_2FAPostAuthenticator, return success as user has Administrator User Role (skipping TOTP 2FA check) for: " + identifier);	
+				} else {
+					_log.info("TOTP_2FAPostAuthenticator, return success as user has " + configuration.loginTotp2faSkipUserRole() + " User Role (skipping TOTP 2FA check) for: " + identifier);	
+				}
+			}			
+
 			return Authenticator.SUCCESS;
 		}
-		
+
 		String authenticatorCode = null;
 		
 		if (parameterMap.containsKey(LoginConstants.AUTHENTICATOR_CODE_FIELD) && parameterMap.get(LoginConstants.AUTHENTICATOR_CODE_FIELD) != null) {
@@ -161,15 +169,20 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 		return user;
 	}
 	
-	private boolean isAdministrator(User user) {
+	private boolean[] isAdministratorOrSkipUserRole(User user) {
 		
 		for (Role role : user.getRoles()) {
 			if (role.getName().equalsIgnoreCase(RoleConstants.ADMINISTRATOR)) {
-				return true;
+				boolean response[]={true, true};
+				return response;
+			} else if (Validator.isNotNull(configuration.loginTotp2faSkipUserRole()) && role.getName().equalsIgnoreCase(configuration.loginTotp2faSkipUserRole())) {
+				boolean response[]={true, false};
+				return response;
 			}
 		}
 		
-		return false;
+		boolean response[]={false, false};
+		return response;
 	}
 	
 	@Activate
@@ -180,6 +193,7 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 		if (_log.isInfoEnabled()) {
 			_log.info("*********************************************");
 			_log.info("configuration.loginTotp2faEnabled: " + configuration.loginTotp2faEnabled());
+			_log.info("configuration.loginTotp2faSkipUserRole: " + configuration.loginTotp2faSkipUserRole());
 			_log.info("configuration.authenticatorCodeLength: " + configuration.authenticatorCodeLength());
 			_log.info("configuration.totp2faImplementation: " + configuration.totp2faImplementation());
 			_log.info("*********************************************");

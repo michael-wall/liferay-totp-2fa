@@ -14,6 +14,9 @@ public interface TOTP_2FAConfiguration {
 	
 	@Meta.AD(deflt = "false", required = false, type = Type.Boolean, name = "configuration.loginTotp2faEnabled.name", description = "configuration.loginTotp2faEnabled.desc")
 	public boolean loginTotp2faEnabled();
+	
+	@Meta.AD(deflt = "", required = false, type = Type.String, name = "configuration.loginTotp2faSkipUserRole.name", description = "configuration.loginTotp2faSkipUserRole.desc")
+	public String loginTotp2faSkipUserRole();
 
 	@Meta.AD(deflt = "", required = false, type = Type.String, name = "configuration.secretKeyMappings.name", description = "configuration.secretKeyMappings.desc")
 	public String secretKeyMappings();
