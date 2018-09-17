@@ -2,3 +2,4 @@
 build/
 target/
 bin/
+mw_deploy.bat
