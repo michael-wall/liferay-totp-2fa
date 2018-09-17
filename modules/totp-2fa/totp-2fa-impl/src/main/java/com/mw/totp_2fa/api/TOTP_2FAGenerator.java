@@ -1,0 +1,18 @@
+package com.mw.totp_2fa.api;
+
+public interface TOTP_2FAGenerator {
+	public static final long authenticatorCodeLifeDuration = 30; // Intentionally not externalized.
+	
+	public interface TOTP_API_IMPLEMENTATIONS {
+		public static final String JAVA_OPT = "java-otp";
+		public static final String J256 = "j256 two-factor-auth";
+	}
+	
+	public interface TOTP_API_LABELS {
+		public static final String JAVA_OPT = "java-otp";
+		public static final String J256 = "j256 two-factor-auth";
+	}
+
+
+	String getTOTPCode(String implementation, String secretKey, int authenticatorCodeLength);
+}
