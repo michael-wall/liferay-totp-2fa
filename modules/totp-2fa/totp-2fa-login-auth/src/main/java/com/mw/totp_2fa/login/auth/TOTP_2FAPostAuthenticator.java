@@ -179,7 +179,7 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 
 		if (_log.isInfoEnabled()) {
 			_log.info("*********************************************");
-			_log.info("configuration.loginTOTPEnabled: " + configuration.loginTotp2faEnabled());
+			_log.info("configuration.loginTotp2faEnabled: " + configuration.loginTotp2faEnabled());
 			_log.info("configuration.authenticatorCodeLength: " + configuration.authenticatorCodeLength());
 			_log.info("configuration.totp2faImplementation: " + configuration.totp2faImplementation());
 			_log.info("*********************************************");
