@@ -8,7 +8,20 @@ TOTP is an algorithm that computes a one-time password using a user specific sha
 
 The project adds an 'Authentication Code' field to the Liferay Login screen below the Password field and verifies the 'Authentication Code' entered by the user as part of the Login workflow. 
 
-The 'Google Authenticator' or 'Authy 2-Factor Authentication' apps (available for iPhone and Android) can be used by the user to generate the one-time password.
+The 'Google Authenticator' app (available for iPhone and Android) can be used by the user to generate the one-time password. Other 2FA apps can be used in place of the Google Authenticator app if required.
+
+**************************************
+2 Factor Authentication App setup
+**************************************
+
+There are lots of 2 Factor Authentication Apps available in the Apple and Google App Stores. 
+
+If you choose an alternative to 'Google Authenticator' app, please note the following when adding a profile:
+
+i. If prompted for type, select 'Time-based' rather than 'Counter-based'
+ii. If prompted for interval, select 30 seconds
+iii. If prompted for length, select 6 digits
+iv. If prompted for algorithm, select SHA-1
 
 **************************************
 Notes:
@@ -33,26 +46,26 @@ OSGi Bundles:
 
 The project consists of the following OSGi bundles:
 
-com.mw.totp-2fa.login.fragment:
+com.mw.totp-2fa.login.fragment
 - Contains a fragment to overide Login Portlet login.jsp
 - The fragment disables Senna for the login portlet (by adding data-senna-off="true" to the aui:form tag)
 - The fragment adds a new dynamic include with key="com.liferay.login.web#/login.jsp#loginFieldsPost" below the Password field
 
-com.mw.totp-2fa.login.auth:
-- Contains an auth.pipeline.post Authenticator that extracts and verifies the Authenticator Code from the Login form based on the users secretKey and the current time
-- Contains the Dynamic Include the adds the Authenticator Code field to the Login screen
+com.mw.totp-2fa.login.auth
+- Contains the Dynamic Include that adds the Authenticator Code field to the Login screen
+- Contains an auth.pipeline.post Authenticator that extracts the Authenticator Code from the Login form and verifies it matches one generated based on the users secretKey and the current time
 
-com.mw.totp-2fa.impl:
-- Contains the OSGi component that uses the TOTP implementations to generate the TOTP Code using the users secretKey and the current time
+com.mw.totp-2fa.impl
 - Contains the System Settings > Security > TOTO 2FA Configuration
+- Contains the TOTP Generator implementation used to generate the TOTP Code using the users secretKey and the current time
 
 **************************************
 Deployment & Setup Steps:
 **************************************
 
-1. The Repository is a Liferay Workspace. Clone or download the Repository and import into Eclipse
+1. The Repository is a Liferay Workspace. Clone or download the Repository and import into an Eclipse Workspace as a Liferay Workspace
 
-2. Build the 3 OSGi bundles with gradle
+2. Perform a Gradle > Refresh Gradle Project then build the 3 OSGi bundles with Gradle (see Gradle Tasks view)
 
 3. Copy the 3 OSGi bundles to the Liferay deploy folder and confirm they deploy successfully with the Gogo shell
 - totp-2fa-login-fragment is a Fragment bundle so it will remain at Resolved status
@@ -74,7 +87,7 @@ out.println(secretKey);
 
 7. Go to Control Panel > Configuration > System Settings > Security > TOTP 2FA
 
-8. Check 'Login TOTP 2FA Enabled' and populate the 'Temporary Secret Key Mappings' field. Each mapping has an identifier 
+8. Enable 'Login TOTP 2FA Enabled' and populate the 'Temporary Secret Key Mappings' fields. Each mapping has an identifier 
 (emailAddress, screenName or userId depending on company.security.auth.type in use) and a secret key separated by = character. 
 e.g. mw@liferay.com=C2MEXYHY62VPCNKXKAEXL5NE5MMNUEHC or wm@liferay.com=VIBLX4DXHY474BNG5YOJAHZ3KNHIKW2H.
 
@@ -82,17 +95,15 @@ Add an entry for each user with one mapping per field only. Use the + icon to ad
 
 9. Click 'Save' to save and apply the changes
 
-10. Download 'Google Authenticator' app to your phone and launch it
+10. Logout of Liferay
 
-11. For each user click the + icon, select 'Manual Entry'. For Account enter the identifier and for Key enter the secretKey and Save
+11. Go to the Home page and click 'Login'. Confirm that the Authenticator Code field appears below the Password field
 
-12. Logout of Liferay
+12. Download the 'Google Authenticator' app to your phone and launch it
 
-13. Go to the Home page and click 'Login'. Confirm that you see the Authenticator Code field below the Password field
+13. For each user, click the + icon and select 'Manual Entry'. For Account enter the identifier and for Key enter the secretKey and Save
 
-14. Identify which user you want to login with and Launch the 'Google Authenticator' app
-
-15. Note the authenticator code from the phone app and login with the user credentials and the authenticator code
+14. Identify which user you want to login with, note the Authenticator Code for that user from the phone app and login with the user credentials and the Authenticator Code
 
 **************************************
 TOTP Implementation
