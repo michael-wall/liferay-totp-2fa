@@ -1,6 +1,7 @@
 package com.mw.totp_2fa.login.auth;
 
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.CompanyConstants;
@@ -18,6 +19,9 @@ import com.mw.totp_2fa.util.TOTP_2FAUtil;
 
 import java.util.Map;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -84,6 +88,12 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 
 			return Authenticator.SUCCESS;
 		}
+		
+		if (getTotpGenerator() == null) {
+			_log.error("TOTP_2FAPostAuthenticator, return failure as TOTP Generator is null for: " + identifier);
+			
+			return Authenticator.FAILURE;
+		}
 
 		String authenticatorCode = null;
 		
@@ -126,7 +136,7 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 			return Authenticator.FAILURE;				
 		}
 			
-		String generatedAuthenticatorCode = totpGenerator.getTOTPCode(configuration.totp2faImplementation(), secretKey, configuration.authenticatorCodeLength());		
+		String generatedAuthenticatorCode = totpGenerator.getTOTPCode(secretKey, configuration.authenticatorCodeLength());		
 			
 		if (Validator.isNull(generatedAuthenticatorCode)) {
 			if (_log.isInfoEnabled()) {
@@ -187,8 +197,10 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 	
 	@Activate
 	@Modified
-	protected void activate(Map<String, Object> properties) {
+	protected void activate(BundleContext bundleContext, Map<String, Object> properties){
 		configuration = ConfigurableUtil.createConfigurable(TOTP_2FAConfiguration.class, properties);
+		
+		String filter = "(&(objectClass=" + TOTP_2FAGenerator.class.getName() + ")(" + TOTP_2FAGenerator.TOTP_IMPL_PROPERTY + "=" + configuration.totp2faImplementation() + "))";
 
 		if (_log.isInfoEnabled()) {
 			_log.info("*********************************************");
@@ -196,8 +208,35 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 			_log.info("configuration.loginTotp2faSkipUserRole: " + configuration.loginTotp2faSkipUserRole());
 			_log.info("configuration.authenticatorCodeLength: " + configuration.authenticatorCodeLength());
 			_log.info("configuration.totp2faImplementation: " + configuration.totp2faImplementation());
-			_log.info("*********************************************");
+			_log.info("TOTP Generator Impl filter: " + filter);
+			_log.info("*********************************************");			
 		}
+		
+		ServiceReference[] serviceReferences = null;
+		try {
+			serviceReferences = bundleContext.getServiceReferences(TOTP_2FAGenerator.class.getName(), filter);
+		} catch (InvalidSyntaxException e) {
+			_log.error("InvalidSyntaxException for filter: " + filter + ", " + e.getClass().getCanonicalName() + ", " + e.getMessage(), e);
+		}
+		
+		if (serviceReferences != null && serviceReferences.length >= 1) {
+			if (_log.isInfoEnabled()) {
+				_log.info("TOTP Generator Impl: " + serviceReferences[0].getProperty(TOTP_2FAGenerator.TOTP_IMPL_PROPERTY));
+			}
+			setTotpGenerator((TOTP_2FAGenerator)bundleContext.getService(serviceReferences[0]));	
+		} else {
+			_log.error("No TOTP Generator Impl found for filter: " + filter);
+			
+			setTotpGenerator(null);
+		}
+	}
+
+	public TOTP_2FAGenerator getTotpGenerator() {
+		return totpGenerator;
+	}	
+
+	public void setTotpGenerator(TOTP_2FAGenerator totpGenerator) {
+		this.totpGenerator = totpGenerator;
 	}
 
 	private volatile TOTP_2FAConfiguration configuration;	
@@ -205,7 +244,6 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 	@Reference(cardinality=ReferenceCardinality.MANDATORY)
 	private UserLocalService userLocalService;
 	
-	@Reference(cardinality=ReferenceCardinality.MANDATORY)
 	private volatile TOTP_2FAGenerator totpGenerator;
 
 	private static Log _log = LogFactoryUtil.getLog(TOTP_2FAPostAuthenticator.class);	

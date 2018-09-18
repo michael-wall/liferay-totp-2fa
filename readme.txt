@@ -23,7 +23,7 @@ iv. Ensure that the phone and server time are roughly the same, if not then the 
 v. If the 'Google Authenticator' authenticator code is red it means it is about to expire
 - Wait until a new one is generated before trying as a time difference of a few seconds between the phone and server means it may not work
 vi. Users with the Liferay Administrator role will always bypass the TOTP 2FA check on login
-vii. A bug in the Liferay DXP 7.1 Senna / Single Page Application (SPA) implementation unexpectedly prevents the Login Modal Dialog form body fields being included in the Authenticator methods parameterMap
+vii. A bug in the Liferay DXP 7.1 Senna / Single Page Application (SPA) implementation unexpectedly prevents the Login Modal Dialog form body fields being included in the parameterMap passed through to the Authenticator 
 - This prevents the Authenticator functioning as expected, as the Authenticator Code field is missing
 - Senna is turned off for the Login form / portlet through the login.jsp fragment
 

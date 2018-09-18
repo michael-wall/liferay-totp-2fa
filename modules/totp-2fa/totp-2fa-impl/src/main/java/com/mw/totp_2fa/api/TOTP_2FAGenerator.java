@@ -12,7 +12,8 @@ public interface TOTP_2FAGenerator {
 		public static final String JAVA_OPT = "java-otp";
 		public static final String J256 = "j256 two-factor-auth";
 	}
+	
+	public static final String TOTP_IMPL_PROPERTY = "totpGeneratorImpl";
 
-
-	String getTOTPCode(String implementation, String secretKey, int authenticatorCodeLength);
+	String getTOTPCode(String secretKey, int authenticatorCodeLength);
 }
