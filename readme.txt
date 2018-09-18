@@ -74,11 +74,11 @@ out.println(secretKey);
 
 7. Go to Control Panel > Configuration > System Settings > Security > TOTP 2FA
 
-8. Check 'Login TOTP 2FA Enabled' and populate the 'Secret Key Mappings' field using the following syntax:
-- comma separated collection of mappings where each mapping has an identifier 
-(emailAddress, screenName or userId depending on company.security.auth.type in use) 
-and secret key, with identifier and secretKey separated by = character. e.g. 
-mw@liferay.com=C2MEXYHY62VPCNKXKAEXL5NE5MMNUEHC,wm@liferay.com=VIBLX4DXHY474BNG5YOJAHZ3KNHIKW2H
+8. Check 'Login TOTP 2FA Enabled' and populate the 'Temporary Secret Key Mappings' field. Each mapping has an identifier 
+(emailAddress, screenName or userId depending on company.security.auth.type in use) and a secret key separated by = character. 
+e.g. mw@liferay.com=C2MEXYHY62VPCNKXKAEXL5NE5MMNUEHC or wm@liferay.com=VIBLX4DXHY474BNG5YOJAHZ3KNHIKW2H.
+
+Add an entry for each user with one mapping per field only. Use the + icon to add additional mappings.
 
 9. Click 'Save' to save and apply the changes
 

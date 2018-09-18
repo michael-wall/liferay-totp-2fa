@@ -19,7 +19,7 @@ public interface TOTP_2FAConfiguration {
 	public String loginTotp2faSkipUserRole();
 
 	@Meta.AD(deflt = "", required = false, type = Type.String, name = "configuration.secretKeyMappings.name", description = "configuration.secretKeyMappings.desc")
-	public String secretKeyMappings();
+	public String[] secretKeyMappings();
 	
 	@Meta.AD(deflt = "6", required = false, type = Type.Integer, name = "configuration.authenticatorCodeLength.name", description = "configuration.authenticatorCodeLength.desc")
 	public int authenticatorCodeLength();
