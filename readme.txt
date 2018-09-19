@@ -128,12 +128,9 @@ TOTP is widely used in two-factor authentication systems. For more info see:
 - https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm
 - https://tools.ietf.org/html/rfc6238
 
-This project supports the following TOTP implementations:
+This project uses the following TOTP implementation:
 
 - https://github.com/jchambers/java-otp/ available here: https://search.maven.org/search?q=a:java-otp
-- https://github.com/j256/two-factor-auth available here: https://mvnrepository.com/artifact/com.j256.two-factor-auth/two-factor-auth
-
-The default implementation is java-otp, this can be switched through System Settings > Security > TOTP 2FA > TOTP 2FA Implementation.
 
 **************************************
 DXP 7.0 support
