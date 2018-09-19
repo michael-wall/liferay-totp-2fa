@@ -1,7 +1,4 @@
 dependencies {
-	compileOnly group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
-	compileOnly group: "com.liferay", name: "com.liferay.portal.configuration.metatype", version: "2.0.3"	
-	compileOnly group: "com.liferay", name: "com.liferay.configuration.admin.api", version: "1.0.1"
 	compileOnly group: "com.liferay", name: "com.liferay.osgi.util", version: "3.0.0"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "3.6.0"
 	compileOnly group: "org.osgi", name: "osgi.cmpn", version: "6.0.0"
@@ -10,4 +7,6 @@ dependencies {
 	
 	compileOnly group: "com.eatthepath", name: "java-otp", version :"0.1.0"
 	compileOnly group: "com.j256.two-factor-auth", name: "two-factor-auth", version :"1.0"
+	
+	compileOnly project(":modules:totp-2fa:totp-2fa-api")
 }
