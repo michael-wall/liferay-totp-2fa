@@ -24,7 +24,7 @@ public class TOTP_2FAGeneratorJavaOptImpl implements TOTP_2FAGenerator {
 		TimeBasedOneTimePasswordGenerator totpGenerator = null;
 
 		try {
-			totpGenerator = new TimeBasedOneTimePasswordGenerator(authenticatorCodeLifeDuration, TimeUnit.SECONDS, authenticatorCodeLength, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1);
+			totpGenerator = new TimeBasedOneTimePasswordGenerator(AUTHENTICATOR_CODE_DURATION, TimeUnit.SECONDS, authenticatorCodeLength, TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1);
 
 			Base32 base32 = new Base32();
 			byte[] optBytes = base32.decode(secretKey);

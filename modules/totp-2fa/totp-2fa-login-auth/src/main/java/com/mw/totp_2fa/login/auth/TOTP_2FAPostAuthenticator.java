@@ -16,6 +16,7 @@ import com.mw.totp_2fa.config.TOTP_2FAConfiguration;
 import com.mw.totp_2fa.login.auth.constants.LoginConstants;
 import com.mw.totp_2fa.util.TOTP_2FAUtil;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.osgi.framework.BundleContext;
@@ -107,8 +108,8 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 				return Authenticator.FAILURE;
 			}
 			
-			// Remove any whitespace within the code e.g. if user used xxx xxx syntax to match Google Authenticator.
-			authenticatorCode = authenticatorCode.replace(" ", "");
+			// Remove any whitespace within the code e.g. if user used xxx xxx syntax to match Google Authenticator or xx xx xx syntax used in other 2FA apps.
+			authenticatorCode = authenticatorCode.replaceAll("\\s", "");
 
 			if (authenticatorCode.trim().length() != configuration.authenticatorCodeLength()) {
 				if (_log.isInfoEnabled()) {
@@ -179,18 +180,20 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 	}
 	
 	private boolean[] isAdministratorOrSkipUserRole(User user) {
-		
+		String ignoreRoles[] = { RoleConstants.GUEST.toLowerCase(), RoleConstants.USER.toLowerCase(), RoleConstants.OWNER.toLowerCase() };
+
 		for (Role role : user.getRoles()) {
 			if (role.getName().equalsIgnoreCase(RoleConstants.ADMINISTRATOR)) {
 				boolean response[]={true, true};
 				return response;
-			} else if (Validator.isNotNull(configuration.loginTotp2faSkipUserRole()) && role.getName().equalsIgnoreCase(configuration.loginTotp2faSkipUserRole())) {
+			} else if (Validator.isNotNull(configuration.loginTotp2faSkipUserRole()) && role.getName().equalsIgnoreCase(configuration.loginTotp2faSkipUserRole()) && !Arrays.asList(ignoreRoles).contains(configuration.loginTotp2faSkipUserRole().trim().toLowerCase())) {
 				boolean response[]={true, false};
 				return response;
 			}
 		}
 		
 		boolean response[]={false, false};
+		
 		return response;
 	}
 	

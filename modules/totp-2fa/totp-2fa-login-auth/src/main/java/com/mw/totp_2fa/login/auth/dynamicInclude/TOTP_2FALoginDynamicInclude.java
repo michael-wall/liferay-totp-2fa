@@ -32,8 +32,8 @@ public class TOTP_2FALoginDynamicInclude implements DynamicInclude {
 		if (configuration.loginTotp2faEnabled()) {
 			PrintWriter printWriter = response.getWriter();
 			
-			//Google Authenticator App displays with a space, so allow for xxx xxx syntax.
-			int authenticatorCodeMaxLength = configuration.authenticatorCodeLength() + 1;
+			//Google Authenticator App displays with a space, so allow for xxx xxx or xx xx xx syntax.
+			int authenticatorCodeMaxLength = configuration.authenticatorCodeLength() + 2;
 
 			printWriter.println("<div class=\"form-group input-text-wrapper\">");
 			printWriter.println("<label class=\"control-label\" for=\"" + LoginConstants.AUTHENTICATOR_CODE_FIELD + "\">");

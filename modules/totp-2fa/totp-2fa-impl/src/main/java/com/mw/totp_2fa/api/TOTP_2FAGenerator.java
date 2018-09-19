@@ -1,7 +1,7 @@
 package com.mw.totp_2fa.api;
 
 public interface TOTP_2FAGenerator {
-	public static final long authenticatorCodeLifeDuration = 30; // Intentionally not externalized.
+	public static final long AUTHENTICATOR_CODE_DURATION = 30; // Intentionally not externalized.
 	
 	public interface TOTP_API_IMPLEMENTATIONS {
 		public static final String JAVA_OPT = "java-otp";
