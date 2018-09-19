@@ -70,8 +70,7 @@ wm@liferay.com=VIBLX4DXHY474BNG5YOJAHZ3KNHIKW2H
 Notes
 **************************************
 
-i. Supported Liferay versions: DXP 7.1
-- TODO 7.0....
+i. Supported Liferay versions: DXP 7.1 however you can make some minor changes to run in DXP 7.0 (see DXP 7.0 support section below)
 ii. 2 Factor Authentication Login must be explicitly configured and enabled after initial deployment, see 'Deployment & Setup Steps' below
 iii. Securely generating, storing / retrieving and distributing the user specific secreyKey is not in scope for this project:
 - The user specific secretKey should be securely generated and securely distributed to the end user
@@ -135,3 +134,24 @@ This project supports the following TOTP implementations:
 - https://github.com/j256/two-factor-auth available here: https://mvnrepository.com/artifact/com.j256.two-factor-auth/two-factor-auth
 
 The default implementation is java-otp, this can be switched through System Settings > Security > TOTP 2FA > TOTP 2FA Implementation.
+
+**************************************
+DXP 7.0 support
+**************************************
+
+You can use this project in DXP 7.0, it will function the same as DXP 7.1 with one minor difference, the Configuration appears under category 'TOTP 2FA' in System Settings.
+
+To use in 7.0, make the following changes, do a Gradle > Refresh Gradle Project then Gradle clean and Gradle build to build the bundles.
+
+totp-2fa-impl\build.gradle, com.liferay.portal.kernel, change version to "2.63.0"
+
+totp-2fa-impl\src\main\java\com\mw\totp_2fa\config\TOTP_2FAConfigurationCategory.java, delete this class
+- the interface doesn't exist in DXP 7.0
+
+totp-2fa-login-auth\build.gradle, comment out: compileOnly group: "com.liferay", name: "com.liferay.configuration.admin.api", version: "1.0.1"
+- the OSGi bundle doesn't exist in DXP 7.0
+
+totp-2fa-login-auth\build.gradle, com.liferay.portal.kernel, change version to "2.63.0"
+
+totp-2fa-login-fragment\bnd.bnd, change the Fragment-Host bundle-version to be "2.0.7"
+- to match the DXP 7.0 version
