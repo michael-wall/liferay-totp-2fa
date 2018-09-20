@@ -199,26 +199,30 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 	
 	@Activate
 	@Modified
-	protected void activate(BundleContext bundleContext, Map<String, Object> properties){
+	protected void activate(BundleContext bundleContext, Map<String, Object> properties){		
 		configuration = ConfigurableUtil.createConfigurable(TOTP_2FAConfiguration.class, properties);
 
-		String filter = "(&(objectClass=" + TOTP_2FAGenerator.class.getName() + ")(" + TOTP_2FAGenerator.TOTP_IMPL_PROPERTY + "=" + configuration.totp2faImplementation() + "))";
-		
 		if (_log.isInfoEnabled()) {
 			_log.info("*********************************************");
 			_log.info("configuration.loginTotp2faEnabled: " + configuration.loginTotp2faEnabled());
 			_log.info("configuration.loginTotp2faSkipUserRole: " + configuration.loginTotp2faSkipUserRole());
 			_log.info("configuration.authenticatorCodeLength: " + configuration.authenticatorCodeLength());
 			_log.info("configuration.totp2faImplementation: " + configuration.totp2faImplementation());
-			_log.info("TOTP Generator Impl filter: " + filter);
+			_log.info("TOTP Generator Impl filter: " + getFilter());
 			_log.info("*********************************************");
 		}
 		
+		setBundleContext(bundleContext);
+		
+		setTOTPGenerator();
+	}
+
+	private void setTOTPGenerator() {
 		ServiceReference[] serviceReferences = null;
 		try {
-			serviceReferences = bundleContext.getServiceReferences(TOTP_2FAGenerator.class.getName(), filter);
+			serviceReferences = bundleContext.getServiceReferences(TOTP_2FAGenerator.class.getName(), getFilter());
 		} catch (InvalidSyntaxException e) {
-			_log.error("InvalidSyntaxException for filter: " + filter + ", " + e.getClass().getCanonicalName() + ", " + e.getMessage(), e);
+			_log.error("InvalidSyntaxException for filter: " + getFilter() + ", " + e.getClass().getCanonicalName() + ", " + e.getMessage(), e);
 		}
 		
 		if (serviceReferences != null && serviceReferences.length >= 1) {
@@ -227,10 +231,24 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 			}
 			setTotpGenerator((TOTP_2FAGenerator)bundleContext.getService(serviceReferences[0]));	
 		} else {
-			_log.error("No TOTP Generator Impl found for filter: " + filter);
+			_log.error("No TOTP Generator Impl found for filter: " + getFilter());
 			
 			setTotpGenerator(null);
 		}
+	}
+	
+	private String getFilter() {
+		return "(&(objectClass=" + TOTP_2FAGenerator.class.getName() + ")(" + TOTP_2FAGenerator.TOTP_IMPL_PROPERTY + "=" + configuration.totp2faImplementation() + "))";
+	}
+	
+	private volatile BundleContext bundleContext;
+	
+	public BundleContext getBundleContext() {
+		return bundleContext;
+	}
+
+	public void setBundleContext(BundleContext bundleContext) {
+		this.bundleContext = bundleContext;
 	}
 
 	private volatile TOTP_2FAConfiguration configuration;	
@@ -241,6 +259,13 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 	private volatile TOTP_2FAGenerator totpGenerator;
 	
 	public TOTP_2FAGenerator getTotpGenerator() {
+		if (totpGenerator == null) {
+			if (_log.isInfoEnabled()) {
+				_log.info("TOTP Generator Null, trying to get Impl: " + getFilter());
+			}
+			
+			setTOTPGenerator();
+		} 
 		return totpGenerator;
 	}	
 
@@ -249,6 +274,9 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 	}
 	
 	//@Reference(cardinality=ReferenceCardinality.OPTIONAL, target = "(" + TOTP_2FAGenerator.TOTP_IMPL_PROPERTY + "=" + TOTP_2FAGenerator.TOTP_API_IMPLEMENTATIONS.JAVA_OPT + ")")
+	//private TOTP_2FAGenerator totpGenerator;
+	
+	//@Reference(cardinality=ReferenceCardinality.MANDATORY)
 	//private TOTP_2FAGenerator totpGenerator;
 
 	private static Log _log = LogFactoryUtil.getLog(TOTP_2FAPostAuthenticator.class);	

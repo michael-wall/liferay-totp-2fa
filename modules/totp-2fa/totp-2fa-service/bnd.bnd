@@ -8,3 +8,8 @@ Bundle-ClassPath:\
 -includeresource:\
   lib/java-otp-0.1.0.jar=java-otp-0.1.0.jar,\
   lib/two-factor-auth-1.0.jar=two-factor-auth-1.0.jar
+Export-Package: \
+	com.mw.totp_2fa.config,\
+	com.mw.totp_2fa.util,\
+	com.mw.totp_2fa.api
+-metatype:*	

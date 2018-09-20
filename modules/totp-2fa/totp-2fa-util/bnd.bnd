@@ -1,8 +1,0 @@
-Bundle-Name: totp-2fa-util
-Bundle-SymbolicName: com.mw.totp-2fa.util
-Bundle-Version: 1.0.0
-Export-Package: \
-	com.mw.totp_2fa.config,\
-	com.mw.totp_2fa.lang,\
-	com.mw.totp_2fa.util
--metatype:*

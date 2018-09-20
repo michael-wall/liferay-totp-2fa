@@ -20,9 +20,9 @@ The following steps cover building, deploying, configuring and testing the proje
 
 1. The GitHub Repository is a Liferay Workspace. Clone or download the Repository and import into an Eclipse Workspace as a Liferay Workspace
 
-2. Perform a Gradle > Refresh Gradle Project then build the 5 OSGi bundles with Gradle through the Gradle Tasks view
+2. Perform a Gradle > Refresh Gradle Project then build the 3 OSGi bundles with Gradle through the Gradle Tasks view
 
-3. Copy the 5 OSGi bundles to the Liferay deploy folder and confirm they deploy successfully with the Gogo shell
+3. Copy the 3 OSGi bundles to the Liferay deploy folder and confirm they deploy successfully with the Gogo shell
 - totp-2fa-login-fragment is a Fragment bundle so it will remain at Resolved status
 
 4. Login to Liferay as an Administrator / Omni Administrator (if applicable)
@@ -100,14 +100,9 @@ com.mw.totp-2fa.login.auth
 - Contains the Dynamic Include that adds the Authenticator Code field to the Login screen
 - Contains an auth.pipeline.post Authenticator that extracts the Authenticator Code from the Login form and verifies it matches one generated based on the users secretKey and the current time
 
-com.mw.totp-2fa.util
-- Contains the System Settings > Security > TOTO 2FA Configuration
-
 com.mw.totp-2fa.service
-- Contains the TOTP Generator implementation
-
-com.mw.totp-2fa.api
-- Contains the TOTP Generator interface 
+- Contains the System Settings > Security > TOTO 2FA Configuration
+- Contains the TOTP Generator Interface and Implementations
 
 **************************************
 2 Factor Authentication App setup
@@ -133,9 +128,12 @@ TOTP is widely used in two-factor authentication systems. For more info see:
 - https://en.wikipedia.org/wiki/Time-based_One-time_Password_algorithm
 - https://tools.ietf.org/html/rfc6238
 
-This project uses the following TOTP implementation:
+This project uses the following TOTP implementation(s):
 
 - https://github.com/jchambers/java-otp/ available here: https://search.maven.org/search?q=a:java-otp
+- https://github.com/j256/two-factor-auth available here: https://mvnrepository.com/artifact/com.j256.two-factor-auth/two-factor-auth
+
+The default implementation is java-otp, this can be switched through System Settings > Security > TOTP 2FA > TOTP 2FA Implementation.
 
 **************************************
 DXP 7.0 support
@@ -145,17 +143,16 @@ You can use this project in DXP 7.0, it will function the same as DXP 7.1 with o
 
 To use in 7.0, make the following changes, do a Gradle > Refresh Gradle Project then Gradle clean and Gradle build to build the bundles.
 
-totp-2fa-service\build.gradle, com.liferay.portal.kernel, change version to "2.63.0"
-
 totp-2fa-login-auth\build.gradle, com.liferay.portal.kernel, change version to "2.63.0"
 
 totp-2fa-login-fragment\bnd.bnd, change the Fragment-Host bundle-version to be "2.0.7"
 - to match the DXP 7.0 version
 
-totp-2fa-util\build.gradle, com.liferay.portal.kernel, change version to "2.63.0"
 
-totp-2fa-util\build.gradle, comment out: compileOnly group: "com.liferay", name: "com.liferay.configuration.admin.api", version: "1.0.1"
+totp-2fa-service\build.gradle, com.liferay.portal.kernel, change version to "2.63.0"
+
+totp-2fa-service\build.gradle, comment out: compileOnly group: "com.liferay", name: "com.liferay.configuration.admin.api", version: "1.0.1"
 - the OSGi bundle doesn't exist in DXP 7.0
 
-totp-2fa-util\src\main\java\com\mw\totp_2fa\config\TOTP_2FAConfigurationCategory.java, delete this class
+totp-2fa-service\src\main\java\com\mw\totp_2fa\config\TOTP_2FAConfigurationCategory.java, delete this class
 - the interface doesn't exist in DXP 7.0

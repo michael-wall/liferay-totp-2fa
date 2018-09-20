@@ -1,4 +1,0 @@
-Bundle-Name: totp-2fa-api
-Bundle-SymbolicName: com.mw.totp-2fa.api
-Bundle-Version: 1.0.0
-Export-Package: com.mw.totp_2fa.api
