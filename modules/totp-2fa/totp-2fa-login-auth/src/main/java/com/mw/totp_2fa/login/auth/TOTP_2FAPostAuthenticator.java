@@ -89,7 +89,7 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 			return Authenticator.SUCCESS;
 		}
 		
-		if (totpGenerator == null) {
+		if (getTotpGenerator() == null) {
 			_log.error("TOTP_2FAPostAuthenticator, return failure as TOTP Generator is null for: " + identifier);
 			
 			return Authenticator.FAILURE;
@@ -136,7 +136,7 @@ public class TOTP_2FAPostAuthenticator implements Authenticator {
 			return Authenticator.FAILURE;				
 		}
 			
-		String generatedAuthenticatorCode = totpGenerator.getTOTPCode(secretKey, configuration.authenticatorCodeLength());		
+		String generatedAuthenticatorCode = getTotpGenerator().getTOTPCode(secretKey, configuration.authenticatorCodeLength());		
 			
 		if (Validator.isNull(generatedAuthenticatorCode)) {
 			if (_log.isInfoEnabled()) {
