@@ -1,3 +1,6 @@
+This is an initial POC for Liferay TOTP 2FA support. See https://github.com/michael-wall/liferay-2fa for latest version
+
+
 **************************************
 Intro
 **************************************
